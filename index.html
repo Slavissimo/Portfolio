@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Slavo – saloncuk.sk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:      #0f0e11;
+      --surface: #1a1820;
+      --border:  #2e2b38;
+      --accent:  #e8c547;
+      --accent2: #7c5cbf;
+      --green:   #4caf78;
+      --text:    #f0edf8;
+      --muted:   #7a7590;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'IBM Plex Mono', monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* noise texture */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── GRID BACKGROUND ── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(232,197,71,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(232,197,71,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      height: 56px;
+      background: rgba(15,14,17,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 3px;
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--accent2); }
+
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+
+    /* ── WRAPPER ── */
+    .wrapper {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-top: 56px;
+    }
+
+    .hero-eyebrow {
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      width: 32px;
+      height: 1px;
+      background: var(--accent2);
+    }
+
+    .hero-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(72px, 14vw, 140px);
+      letter-spacing: 6px;
+      line-height: 0.9;
+      color: var(--text);
+    }
+    .hero-name .accent { color: var(--accent); }
+
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(20px, 4vw, 32px);
+      letter-spacing: 4px;
+      color: var(--muted);
+      margin-top: 12px;
+    }
+
+    .hero-desc {
+      max-width: 520px;
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--muted);
+      margin-top: 28px;
+    }
+
+    .hero-desc strong { color: var(--text); font-weight: 600; }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 28px;
+    }
+
+    .tag {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 5px 12px;
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .tag.highlight {
+      border-color: rgba(232,197,71,0.4);
+      color: var(--accent);
+      background: rgba(232,197,71,0.06);
+    }
+
+    .hero-scroll {
+      margin-top: 60px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .hero-scroll .line {
+      width: 40px;
+      height: 1px;
+      background: var(--border);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+    @keyframes scrollPulse {
+      0%,100% { width: 40px; opacity: 0.5; }
+      50%      { width: 60px; opacity: 1; }
+    }
+
+    /* ── SECTION HEADER ── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+    .section-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 13px;
+      letter-spacing: 3px;
+      color: var(--accent2);
+    }
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 36px;
+      letter-spacing: 4px;
+      color: var(--text);
+    }
+    .section-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── PROJECTS SECTION ── */
+    .projects {
+      padding: 100px 0;
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px 24px;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 0%, rgba(232,197,71,0.06), transparent 70%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .card:hover {
+      border-color: rgba(232,197,71,0.5);
+      transform: translateY(-4px);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+    }
+    .card:hover::before { opacity: 1; }
+
+    .card.purple-hover:hover {
+      border-color: rgba(124,92,191,0.5);
+    }
+    .card.purple-hover::before {
+      background: radial-gradient(circle at 50% 0%, rgba(124,92,191,0.08), transparent 70%);
+    }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+
+    .card-icon {
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .card-arrow {
+      font-size: 18px;
+      color: var(--border);
+      transition: color 0.2s, transform 0.2s;
+    }
+    .card:hover .card-arrow {
+      color: var(--accent);
+      transform: translate(3px, -3px);
+    }
+    .card.purple-hover:hover .card-arrow { color: var(--accent2); }
+
+    .card-type {
+      font-size: 10px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .card-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      letter-spacing: 3px;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .card-desc {
+      font-size: 12px;
+      line-height: 1.7;
+      color: var(--muted);
+      flex: 1;
+    }
+
+    .card-stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .pill {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 3px 8px;
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: var(--muted);
+    }
+    .pill.gold { border-color: rgba(232,197,71,0.3); color: rgba(232,197,71,0.8); }
+    .pill.purple { border-color: rgba(124,92,191,0.3); color: rgba(124,92,191,0.9); }
+    .pill.green { border-color: rgba(76,175,120,0.3); color: rgba(76,175,120,0.8); }
+
+    /* ── ABOUT SECTION ── */
+    .about {
+      padding: 100px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: start;
+    }
+
+    .about-text p {
+      font-size: 13px;
+      line-height: 1.9;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+    .about-text p strong { color: var(--text); }
+
+    .about-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .stat-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+    }
+
+    .stat-box-val {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 42px;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .stat-box-lbl {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .footer-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px;
+      letter-spacing: 3px;
+      color: var(--accent);
+    }
+    .footer-logo span { color: var(--accent2); }
+
+    .footer-copy {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 1px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 20px;
+    }
+    .footer-links a {
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--accent); }
+
+    /* ── ANIMATIONS ── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .fade-up:nth-child(2) { transition-delay: 0.1s; }
+    .fade-up:nth-child(3) { transition-delay: 0.2s; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      nav { padding: 0 20px; }
+      .nav-links { display: none; }
+      .about-grid { grid-template-columns: 1fr; gap: 40px; }
+      .about-stats { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">SLAVO<span>.</span></a>
+  <ul class="nav-links">
+    <li><a href="#projekty">Projekty</a></li>
+    <li><a href="#o-mne">O mne</a></li>
+    <li><a href="https://github.com/Slavissimo" target="_blank">GitHub</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrapper">
+    <div class="hero-eyebrow">saloncuk.sk</div>
+    <div class="hero-name">SLA<span class="accent">VO</span></div>
+    <div class="hero-title">Študent · Developer · Hráč</div>
+    <p class="hero-desc">
+      Mám <strong>22 rokov</strong>, studujem <strong>informatiku</strong> a verím, že dobrý kód je ako dobrý ťah v šachu –
+      jednoduchý na pohľad, hlboký vo vnútri. Popri škole pracujem v <strong>Youthfully Yours SK</strong>
+      a vo voľnom čase budujem veci, ktoré ma bavia.
+    </p>
+    <div class="hero-tags">
+      <span class="tag highlight">Informatika</span>
+      <span class="tag highlight">Youthfully Yours SK</span>
+      <span class="tag">Šport</span>
+      <span class="tag">Web Dev</span>
+      <span class="tag">Python</span>
+      <span class="tag">React</span>
+    </div>
+    <div class="hero-scroll">
+      <div class="line"></div>
+      Pozri si projekty
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section class="projects" id="projekty">
+  <div class="wrapper">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <span class="section-title">Projekty</span>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="projects-grid">
+
+      <!-- Tkáč -->
+      <a class="card fade-up" href="https://tkac.saloncuk.sk" target="_blank">
+        <div class="card-top">
+          <span class="card-icon">🧵</span>
+          <span class="card-arrow">↗</span>
+        </div>
+        <div class="card-type">Slovná hra</div>
+        <div class="card-name">TKÁČ</div>
+        <p class="card-desc">
+          Slovenský Weaver Wordle. Dostaneš štartovacie slovo a musíš sa dostať
+          na cieľové – krok za krokom, vždy zmenou práve jedného písmena.
+        </p>
+        <div class="card-stack">
+          <span class="pill gold">HTML</span>
+          <span class="pill gold">CSS</span>
+          <span class="pill gold">JavaScript</span>
+          <span class="pill">Slovenčina</span>
+        </div>
+      </a>
+
+      <!-- Slovko -->
+      <a class="card fade-up" href="https://slovko.saloncuk.sk" target="_blank">
+        <div class="card-top">
+          <span class="card-icon">🟩</span>
+          <span class="card-arrow">↗</span>
+        </div>
+        <div class="card-type">Slovná hra · Denná výzva</div>
+        <div class="card-name">SLOVKO</div>
+        <p class="card-desc">
+          Slovenský Wordle. Každý deň jedno nové 5-písmenové slovo – máš 6 pokusov.
+          Rovnaké slovo pre každého hráča v ten istý deň.
+        </p>
+        <div class="card-stack">
+          <span class="pill gold">HTML</span>
+          <span class="pill gold">CSS</span>
+          <span class="pill gold">JavaScript</span>
+          <span class="pill">Denná výzva</span>
+        </div>
+      </a>
+
+      <!-- Social Scraper -->
+      <a class="card purple-hover fade-up" href="https://scraper.saloncuk.sk" target="_blank">
+        <div class="card-top">
+          <span class="card-icon">🔍</span>
+          <span class="card-arrow">↗</span>
+        </div>
+        <div class="card-type">Web appka · Bakalárska práca</div>
+        <div class="card-name">SOCIAL SCRAPER</div>
+        <p class="card-desc">
+          Nástroj na scrapovanie verejných komentárov zo sociálnych sietí.
+          Podporuje Reddit a YouTube, s architektúrou pripravenou pre Facebook a Instagram.
+        </p>
+        <div class="card-stack">
+          <span class="pill purple">React</span>
+          <span class="pill purple">FastAPI</span>
+          <span class="pill green">Python</span>
+          <span class="pill">YouTube API</span>
+          <span class="pill">Reddit API</span>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="o-mne">
+  <div class="wrapper">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <span class="section-title">O mne</span>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="about-grid">
+      <div class="about-text">
+        <p>
+          Volám sa <strong>Slavo</strong>, mám 22 rokov a studujem informatiku.
+          Kód ma baví nielen ako nástroj, ale aj ako spôsob myslenia –
+          každý projekt je pre mňa príležitosť naučiť sa niečo nové.
+        </p>
+        <p>
+          Pracujem v <strong>Youthfully Yours SK</strong>, kde spájam technické
+          zručnosti s reálnymi projektmi pre mladých ľudí. Verím,
+          že technológia má zmysel vtedy, keď slúži ľuďom.
+        </p>
+        <p>
+          Keď nesedím za počítačom, väčšinou športujem.
+          Pohyb mi pomáha vypnúť hlavu a vrátiť sa k práci s čerstvými nápadmi.
+        </p>
+      </div>
+
+      <div class="about-stats">
+        <div class="stat-box">
+          <div class="stat-box-val">22</div>
+          <div class="stat-box-lbl">Rokov</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-val">3</div>
+          <div class="stat-box-lbl">Projekty</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-val">2</div>
+          <div class="stat-box-lbl">Hry</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-val">∞</div>
+          <div class="stat-box-lbl">Káva</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">SLAVO<span>.</span></div>
+    <div class="footer-copy">© 2025 saloncuk.sk</div>
+    <div class="footer-links">
+      <a href="https://github.com/Slavissimo" target="_blank">GitHub</a>
+      <a href="#projekty">Projekty</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Fade-up on scroll
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add("visible");
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll(".fade-up").forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
